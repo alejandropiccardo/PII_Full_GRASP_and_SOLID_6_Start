@@ -12,8 +12,20 @@ namespace Full_GRASP_And_SOLID
     public class Recipe : IRecipeContent // Modificado por DIP
     {
         // Cambiado por OCP
-        private IList<BaseStep> steps = new List<BaseStep>();
+        protected IList<BaseStep> steps = new List<BaseStep>();
+        private TimerAdapter timerClient;
+        private CountdownTimer timer = new CountdownTimer();
+        public bool Cooked { get; private set; } = false;
 
+        public void Cook()
+        {
+            if (this.Cooked)
+            {
+                InvalidOperationException e = new InvalidOperationException();
+                throw e;
+            }
+            StartCountDown();
+        }
         public Product FinalProduct { get; set; }
 
         // Agregado por Creator
@@ -61,6 +73,33 @@ namespace Full_GRASP_And_SOLID
             }
 
             return result;
+        }
+        public int GetCookTime()
+        {
+            int TotalTime = 0;
+            foreach (BaseStep step in this.steps)
+            {
+                TotalTime += step.Time;
+            }
+            return TotalTime;
+        }
+        private void StartCountDown()
+        {
+            this.timerClient = new TimerAdapter(this);
+            this.timer.Register(GetCookTime(), this.timerClient);
+        }
+        private class TimerAdapter : TimerClient
+        {
+            private Recipe recipe;
+            public TimerAdapter(Recipe recipe)
+            {
+                this.recipe = recipe;
+
+            }
+            public void TimeOut()
+            {
+                this.recipe.Cooked = true;
+            }
         }
     }
 }

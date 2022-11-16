@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace Full_GRASP_And_SOLID
 {
@@ -18,6 +19,7 @@ namespace Full_GRASP_And_SOLID
 
         public static void Main(string[] args)
         {
+            
             PopulateCatalogs();
 
             Recipe recipe = new Recipe();
@@ -31,6 +33,10 @@ namespace Full_GRASP_And_SOLID
             printer.PrintRecipe(recipe);
             printer = new FilePrinter();
             printer.PrintRecipe(recipe);
+            Console.WriteLine($"Cooked: {recipe.Cooked}");
+            recipe.Cook();
+            Thread.Sleep(5000); // 5 segundos
+            Console.WriteLine($"Cooked: {recipe.Cooked}");
         }
 
         private static void PopulateCatalogs()
